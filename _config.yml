@@ -6,8 +6,8 @@ paginate:     1
 
 # About/contact
 author:
-  name:       Author name
-  url:        http://yourhomepage.com 
+  name:       X-assistant
+  url:        https://github.com/X-assistant
 
 # Gems
 gems:
