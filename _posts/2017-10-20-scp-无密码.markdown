@@ -1,0 +1,30 @@
+
+---
+layout: default
+title:  scp免密码传输文件
+date:   2017-10-20 17:50:00
+categories: 日常开发
+---
+
+假设如下两台机器，通常情况下，在A机器scp 文件传输到B机器需要密码。通过如下几步设置，可以去掉密码输入步骤。
+A服务器地址：192.168.1.200，下面简称A 
+B服务器地址：192.168.1.201，下面简称B
+
+1. 在A生成密钥对
+在终端执行如下代码：
+```
+ssh-keygen -t rsa -P ""
+ # 显示A的公钥
+cat ~/.ssh/id_rsa.pub
+```
+2. 在B中添加A的公钥
+在终端执行如下代码
+```
+cat "A的公钥" >> ~/.ssh/authorized_keys
+ # 如果没有authorized_keys， 上一步已经创建了，但是仍需要修改权限
+chmod 700 ~/.ssh/authorized_keys
+```
+3. 在A中使用scp向B拷贝文件，将不需要密码
+```
+scp some.txt someone@192.168.1.201:/home/someone/
+```
