@@ -86,7 +86,6 @@ categories: Git
 #### 2.5. git add: 添加到暂存区
 
 
-
 待续。。。
 
 
@@ -95,3 +94,5 @@ categories: Git
 
 ### 4. 团队合作
 待续。。。
+
+# 全文见[goto456技术博客](http://goto456.com/B20171104153703.html)
