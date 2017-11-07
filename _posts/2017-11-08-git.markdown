@@ -1,0 +1,98 @@
+---
+layout: default
+title:  Git教程及常用命令
+date:   2017-11-08 15:48:00
+categories: Git
+---
+[TOC]
+
+### 1. Git 简介
+`Git 的诞生：`
+> Linus(Linux之父)花了两周时间自己用C写了一个分布式版本控制系统，这就是Git！   
+一个月之内，Linux系统的源码已经由Git管理了！
+
+`几个概念：`
+> `工作区`、`版本库`、`暂存区`   
+如下图所示：
+
+![image](https://raw.githubusercontent.com/goto456/markdown-pictures/master/wengeblog/git/1.png)
+
+> **1.** 图中左侧为工作区，右侧为版本库。在版本库中标记为`index`的区域是暂存区（`stage`,`index`），标记为`master`的是`master`分支所代表的目录树。
+
+> **2.** 图中我们可以看出此时`HEAD`指针实际是指向`master`分支的一个“游标”。所以图示的命令中出现 HEAD 的地方可以用 master 来替换。
+
+> **3.** 图中的`objects`标识的区域为`Git`的对象库，实际位于`.git/objects`目录下。
+
+> **4.** 当对工作区修改（或新增）的文件执行`git add`命令时，暂存区的目录树被更新，同时工作区修改（或新增）的文件内容被写入到对象库中的一个新的对象中，而该对象的`ID`被记录在暂存区的文件索引中。
+
+> **5.** 当执行提交操作`git commit`时，暂存区的目录树写到版本库（对象库）中，`master`分支会做相应的更新。即`master`指向的目录树就是提交时暂存区的目录树。
+
+> **6.** 当执行`git reset HEAD`命令时，暂存区的目录树会被重写，被`master`分支指向的目录树所替换，但是工作区不受影响。
+
+> **7.** 当执行`git rm --cached <file>`命令时，会直接从暂存区删除文件，工作区则不做出改变。
+
+> **8.** 当执行`git checkout .`或者`git checkout -- <file>`命令时，会用暂存区全部或指定的文件替换工作区的文件。这个操作很危险，会清除工作区中未添加到暂存区的改动。
+
+> **9.** 当执行`git checkout HEAD .`或者`git checkout HEAD <file>`命令时，会用`HEAD`指向的`master`分支中的全部或者部分文件替换暂存区和以及工作区中的文件。这个命令也是极具危险性的，因为不但会清除工作区中未提交的改动，也会清除暂存区中未提交的改动。
+
+
+### 2. 基本命令
+
+#### 2.1. git config: 环境设置命令   
+
+通常情况下，安装完Git后的第一件事就是设置**用户名称**和**邮件地址**。每一个Git的提交都会使用这些信息，如果不设置则无法进行提交。
+
+`$ git config --global user.name "goto456"    // 设置用户名称`   
+`$ git config --global user.email "goto456@126.com"    // 设置邮件地址`
+
+> 使用`--global`参数表示设置了全局的环境，如果想对与特定的项目使用不同的用户名和邮件地址，则可已在该项目目录下不使用`--global`参数设置不同的用户名和邮件地址。
+
+`git config --list`命令可以列出当前Git所有的配置信息。
+
+
+#### 2.2. git init: 初始化本地仓库
+
+获取一个 Git 仓库有2中方法：
+> 1. 本地初始化一个仓库
+> 2. 从远程克隆一个仓库到本地
+
+对于第1种方式，如果想对本地现有的一个项目用 Git 来管理，可以直接进入该项目的目录下执行如下命令，就可以将其初始化成一个 Git 仓库了。   
+`$ git init`
+
+
+#### 2.3. git clone: 克隆远程仓库到本地
+
+对于第二种方式，也是最常用的方式，比如你在 GitHub 上（或者其他代码托管网站）已经建立了一个项目，你就可以将该项目从远程克隆到本地，这就有了该项目在本地的 Git 仓库。
+
+`$ git clone git@github.com:goto456/leetcode.git // 通过ssh方式克隆`   
+`$ git clone https://github.com/goto456/leetcode.git // 通过https方式克隆`
+
+以上2种方式有如下区别：
+> **1. https方式**：不管是谁，只要拿到该项目的 url 可以随便 clone，但是在 push 到远程的时候需要验证用户名和密码；   
+> **2. ssh方式**：需要现将你电脑的SSH key（SSH公钥）添加到GitHub（或者其他代码托管网站）上，这样在 clone  项目和 push 项目到远程时都不需要输入用户名和密码。   
+
+如何生成`SSH key`，参见下一条命令：ssh-keygen
+
+
+#### 2.4. ssh-keygen: 生成SSH公钥
+
+生成公钥之前先检查系统中是否已经有了公钥，公钥一般在`~/.ssh/`目录下。如果该目录下存在`id_rsa.pub`文件，这就是公钥（id_rsa 文件是私钥）；如果不存在此文件，甚至连`.ssh`目录都不存在，则需要用 ssh-keygen 命令来生成。如下所示：
+
+`$ ssh-keygen // 然后一直按回车键`
+
+这就可以生成 SSH key 了，公钥`id_rsa.pub`文件的内容大致如下所示：
+> ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC/bdrJjo6HNCuzhpTZNVsTju5NnksTca2kRzfbZlFs+8S4bs8hTlo6aV/GJPkTT0zxJfuOgfd4B4O8Xh0NQg51Zl4yCsFdnIKFA0tgBOg/H5oi48Ypoo8h3LO+S8gd8HR5eqndjINx3kCrQx4gISCW25d7GKTm3c40YPoUCIL0Zg4+iuu2ioeVCpv+FSCKhlcrYew7c2aEe3p/oOmATT3UX9S4t94qzy8KkxRlnQ4a8zQ3OTRE23r7+PPHGN8oBAen//NQNn9COUhqU3pHfvtxqYrG1Blhf0t6HhkHz9Fd8StCUIDQv7yHHvuuPFumh3/8PNG8DDPQqWsqXmK2XozT goto456@126.com
+
+
+#### 2.5. git add: 添加到暂存区
+
+
+
+待续。。。
+
+
+### 3. 分支管理
+待续。。。
+
+### 4. 团队合作
+待续。。。
